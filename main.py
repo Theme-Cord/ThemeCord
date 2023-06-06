@@ -1,5 +1,5 @@
-import urllib.request
 import subprocess
+import sys
 import os
 import webbrowser
 from PyQt5 import QtWidgets
@@ -9,8 +9,11 @@ from ui_mainwindow import Ui_MainWindow
 from ui_initialize import Ui_MainWindow as Ui_Initialize
 
 
+
 class MainWindow(QMainWindow):
+    # Class definition for the main application window
     def check_file_exists(self):
+        # Checks if a file exists
         appdata_dir = os.getenv('APPDATA')  # Get the path to the AppData directory
         saves_dir = os.path.join(appdata_dir, 'ThemeCord', 'Saves')  # Create the path to the saves directory
         
@@ -23,12 +26,14 @@ class MainWindow(QMainWindow):
             print("File does not exist!")
             return False
     def __init__(self):
+        # Constructor for the MainWindow class
         super().__init__()
         if self.check_file_exists():
             self.ui = Ui_MainWindow()
             self.ui.setupUi(self)
             self.setFixedSize(861, 535)
             self.setWindowFlags(self.windowFlags() & ~Qt.WindowMaximizeButtonHint)
+            self.setWindowTitle("Theme Cord")
             self.ui.Discord.clicked.connect(self.open_discord)
             self.ui.Github.clicked.connect(self.open_github)
             self.ui.pushButton.clicked.connect(self.apply)
@@ -39,6 +44,7 @@ class MainWindow(QMainWindow):
             self.ui.setupUi(self)
             self.setFixedSize(546,743)
             self.setWindowFlags(self.windowFlags() & ~Qt.WindowMaximizeButtonHint)
+            self.setWindowTitle("Initialize")
             self.ui.Discord.clicked.connect(self.open_discord)
             self.ui.Github.clicked.connect(self.open_github)
             self.ui.Website.clicked.connect(self.open_website)
@@ -46,20 +52,19 @@ class MainWindow(QMainWindow):
             self.ui.Initialize.clicked.connect(self.init)
             
     def apply(self):
+        # Applies a new theme to Discord
         # Get the input from the QTextEdit
         theme_text = self.ui.themeText.toPlainText()
 
         # Check if the input is empty or equals "Enter your theme link"
-        if theme_text == "Enter your theme link" or theme_text == "":
+        if theme_text == "Enter your theme link" or theme_text == "" or theme_text == "Please fill me!":
             return self.ui.themeText.setText("Please fill me!")
 
         # Set the path to the CSS file
         css_path = os.path.join(os.path.dirname(__file__), "themecord", "template.css")
         
         # Create the new CSS content
-        file_content = f"""
-        @import url('{theme_text}');
-        """
+        file_content = f"@import url('{theme_text}');"
 
         # Append the new CSS content to the file
         with open(css_path, 'a') as file:
@@ -73,6 +78,7 @@ class MainWindow(QMainWindow):
 
         message_box.exec_()
     def remove_theme(self):
+        # Removes the applied theme from Discord
         # Set the path to the CSS file
         css_path = os.path.join(os.path.dirname(__file__), "themecord", "template.css")
 
@@ -94,14 +100,12 @@ class MainWindow(QMainWindow):
         message_box.exec_()
         return
     def init(self):
+        # Initializes the application and injects the theme into Discord
         # Set the path to the CSS file
         css_path = os.path.join(os.path.dirname(__file__), "themecord", "template.css")
 
         # Define the CSS content
-        file_content = """
-        /* CSS style for ThemeCord */
-        /* Example: import url('url'); */
-        """
+        file_content = ""
 
         # Write the CSS file
         with open(css_path, 'w') as file:
@@ -128,24 +132,26 @@ class MainWindow(QMainWindow):
         message_box.addButton(QMessageBox.Ok)
         message_box.exec_()
     def open_url(self, url):
+        # Opens a given URL in a web browser
         if webbrowser.open(url):
             print("URL opened successfully.")
         else:
             print("Failed to open the URL.")
     def open_discord(self):
+        # Opens the Discord URL in a web browser
         return self.open_url("https://discord.gg/FTK3txBsAS")
     def open_github(self):
+        # Opens the Github URL in a web browser
         return self.open_url("https://github.com/Theme-Cord")
     def open_website(self):
+        # Opens the Website URL in a web browser
         return self.open_url("https://Theme-Cord.Github.Io")
     def open_in(self):
+        # Opens a specific URL in a web browser
         return self.open_url("https://github.com/Theme-Cord/.github/blob/main/why_init.md")
-    def inject_theme(self):
-        return
-
 
 if __name__ == "__main__":
-    import sys
+    # Entry point of the script
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.show()
